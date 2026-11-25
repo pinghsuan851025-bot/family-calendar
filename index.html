@@ -652,6 +652,47 @@
         padding: 0 10px;
       }
     }
+    /* 近期活動：精簡版 */
+#upcomingEvents {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+#upcomingEvents .event-card {
+  padding: 10px 12px;
+  gap: 10px;
+  margin-top: 8px;
+  border-radius: 12px;
+}
+
+#upcomingEvents .event-time {
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+#upcomingEvents .event-name {
+  font-size: 14px;
+}
+
+#upcomingEvents .event-detail {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+#upcomingEvents .event-actions {
+  margin-top: 6px;
+  gap: 6px;
+}
+
+#upcomingEvents .action-btn {
+  padding: 5px 9px;
+  font-size: 11px;
+}
+
+#upcomingEvents .empty {
+  padding: 16px 10px;
+}
   </style>
 </head>
 
@@ -670,7 +711,17 @@
     </div>
     <div class="header-tag">👨‍👩‍👧 家庭共享行程</div>
   </header>
+<!-- 近期活動 -->
+<section class="bottom-section">
+  <div class="bottom-header">
+    <div class="selected-date-title">📅 近期活動</div>
+    <div>未來一個月</div>
+  </div>
 
+  <div id="upcomingEvents">
+    <div class="loading">正在載入近期活動...</div>
+  </div>
+</section>
   <!-- 月曆 -->
   <section class="calendar-panel">
 
@@ -711,17 +762,7 @@
   </section>
 
 </div>
-<!-- 近期活動 -->
-<section class="bottom-section">
-  <div class="bottom-header">
-    <div class="selected-date-title">📅 近期活動</div>
-    <div>未來一個月</div>
-  </div>
 
-  <div id="upcomingEvents">
-    <div class="loading">正在載入近期活動...</div>
-  </div>
-</section>
 <!-- 新增活動視窗 -->
 <div class="modal-overlay" id="modalOverlay" onclick="overlayClose(event)">
   <div class="modal">
