@@ -711,7 +711,17 @@
   </section>
 
 </div>
+<!-- 近期活動 -->
+<section class="bottom-section">
+  <div class="bottom-header">
+    <div class="selected-date-title">📅 近期活動</div>
+    <div>未來一個月</div>
+  </div>
 
+  <div id="upcomingEvents">
+    <div class="loading">正在載入近期活動...</div>
+  </div>
+</section>
 <!-- 新增活動視窗 -->
 <div class="modal-overlay" id="modalOverlay" onclick="overlayClose(event)">
   <div class="modal">
@@ -852,9 +862,10 @@
       return;
     }
 
-    allEvents = result.data || [];
-    renderCalendar();
-    renderDayEvents();
+allEvents = result.data || [];
+renderCalendar();
+renderDayEvents();
+renderUpcomingEvents();
   };
 
   const script = document.createElement('script');
@@ -1046,7 +1057,99 @@ function renderDayEvents() {
     container.appendChild(card);
   });
 }
+// 顯示未來一個月的近期活動
+function renderUpcomingEvents() {
+  const container = document.getElementById('upcomingEvents');
+  container.replaceChildren();
 
+  // 今天
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // 一個月後
+  const oneMonthLater = new Date(today);
+  oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+
+  const todayKey = dateKey(today);
+  const endKey = dateKey(oneMonthLater);
+
+  // 篩選今天至一個月內的活動
+  const upcoming = allEvents
+    .filter(event =>
+      event.date >= todayKey &&
+      event.date <= endKey
+    )
+    .sort((a, b) =>
+      a.date.localeCompare(b.date) ||
+      a.time.localeCompare(b.time)
+    );
+
+  if (upcoming.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = '☁️ 未來一個月沒有安排活動';
+    container.appendChild(empty);
+    return;
+  }
+
+  upcoming.forEach(function(event) {
+    const card = document.createElement('div');
+    card.className = 'event-card';
+
+    const bar = document.createElement('div');
+    bar.className = 'event-bar';
+    bar.style.background = '#8AB4DA';
+
+    const content = document.createElement('div');
+    content.className = 'event-content';
+
+    const date = document.createElement('div');
+    date.className = 'event-time';
+    date.textContent = '📅 ' + event.date + '　⏰ ' + event.time;
+
+    const name = document.createElement('div');
+    name.className = 'event-name';
+    name.textContent = event.title;
+
+    const detail = document.createElement('div');
+    detail.className = 'event-detail';
+
+    let detailText = '';
+    if (event.location) detailText += '📍 ' + event.location;
+    if (event.note) {
+      if (detailText) detailText += '\n';
+      detailText += '📝 ' + event.note;
+    }
+
+    detail.textContent = detailText;
+
+    content.append(date, name);
+    if (detailText) content.appendChild(detail);
+
+    const actions = document.createElement('div');
+    actions.className = 'event-actions';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'action-btn';
+    editBtn.textContent = '✏️ 編輯';
+    editBtn.addEventListener('click', function() {
+      editEvent(event.id);
+    });
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'action-btn delete';
+    deleteBtn.textContent = '🗑️ 刪除';
+    deleteBtn.addEventListener('click', function() {
+      removeEvent(event.id, event.title);
+    });
+
+    actions.append(editBtn, deleteBtn);
+
+    content.appendChild(actions);
+    card.append(bar, content);
+    container.appendChild(card);
+  });
+}
   // 月份切換
   function changeMonth(offset) {
     currentDate = new Date(
