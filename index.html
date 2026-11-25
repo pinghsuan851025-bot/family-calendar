@@ -1,0 +1,1273 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6E9FC8;
+      --primary-dark: #507FA8;
+      --primary-light: #E8F2FB;
+      --bg: #F3F7FB;
+      --text: #34495E;
+      --muted: #91A5B8;
+      --border: #E6EDF4;
+      --white: #FFFFFF;
+      --shadow: 0 4px 20px rgba(65, 103, 142, 0.06);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, "Noto Sans TC", sans-serif;
+    }
+
+    button, input, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: auto;
+      padding: 24px;
+    }
+
+    /* 頁首 */
+    .header {
+      background: white;
+      border-radius: 22px;
+      padding: 24px 28px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 17px;
+      background: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .brand h1 {
+      font-size: 25px;
+      color: #416F98;
+      margin: 0;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 7px 0 0;
+    }
+
+    .header-tag {
+      background: var(--primary-light);
+      color: #6189AD;
+      padding: 10px 14px;
+      border-radius: 30px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    /* 月曆區 */
+    .calendar-panel {
+      background: white;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .calendar-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      gap: 12px;
+    }
+
+    .month-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #426F96;
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn, .today-btn {
+      height: 38px;
+      border: 1px solid var(--border);
+      background: white;
+      color: #6486A5;
+      border-radius: 10px;
+      transition: .2s;
+    }
+
+    .nav-btn {
+      width: 38px;
+      font-size: 18px;
+    }
+
+    .today-btn {
+      padding: 0 14px;
+      font-size: 13px;
+    }
+
+    .nav-btn:hover, .today-btn:hover {
+      background: var(--primary-light);
+      border-color: #C8DDF0;
+    }
+
+    .weekdays, .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .weekdays {
+      margin-bottom: 8px;
+    }
+
+    .weekday {
+      text-align: center;
+      padding: 12px 0;
+      font-size: 13px;
+      color: #8FA5B9;
+      font-weight: 600;
+    }
+
+    .weekday:first-child {
+      color: #D18C95;
+    }
+
+    .weekday:last-child {
+      color: #7EA5CB;
+    }
+
+    .calendar-day {
+      min-height: 108px;
+      border: 1px solid #F0F4F8;
+      padding: 8px;
+      position: relative;
+      cursor: pointer;
+      transition: .15s;
+      background: white;
+    }
+
+    .calendar-day:hover {
+      background: #F8FBFE;
+      border-color: #D5E6F5;
+      z-index: 1;
+    }
+
+    .calendar-day.other-month {
+      background: #FAFBFC;
+    }
+
+    .calendar-day.other-month .day-number {
+      color: #C5CFD9;
+    }
+
+    .calendar-day.selected {
+      background: #EDF5FC;
+      border: 1px solid #9FC4E5;
+    }
+
+    .day-number {
+      width: 29px;
+      height: 29px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 13px;
+      color: #627C94;
+      margin-bottom: 5px;
+    }
+
+    .calendar-day.today .day-number {
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+    }
+
+    .calendar-day.sunday .day-number {
+      color: #CF8992;
+    }
+
+    .calendar-day.sunday.today .day-number {
+      color: white;
+    }
+
+    .calendar-day.saturday .day-number {
+      color: #76A1CA;
+    }
+
+    .calendar-day.saturday.today .day-number {
+      color: white;
+    }
+
+    .day-event {
+      background: #E6F1FB;
+      color: #5E85AA;
+      padding: 4px 6px;
+      border-radius: 5px;
+      font-size: 11px;
+      margin-top: 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.5;
+    }
+
+    .day-event.event-2 {
+      background: #EDF5ED;
+      color: #7A9D7E;
+    }
+
+    .day-event.event-3 {
+      background: #F8F0E8;
+      color: #B48B69;
+    }
+
+    .more-events {
+      font-size: 10px;
+      color: #8EA4B8;
+      padding: 3px 4px;
+    }
+
+    /* 下方活動 */
+    .bottom-section {
+      margin-top: 20px;
+      background: white;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .bottom-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .selected-date-title {
+      font-size: 19px;
+      font-weight: bold;
+      color: #496F94;
+    }
+
+    .add-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 600;
+      transition: .2s;
+    }
+
+    .add-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .event-card {
+      display: flex;
+      gap: 14px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 16px;
+      margin-top: 12px;
+      transition: .2s;
+    }
+
+    .event-card:hover {
+      background: #FBFDFF;
+    }
+
+    .event-bar {
+      width: 5px;
+      flex-shrink: 0;
+      background: #8AB4DA;
+      border-radius: 10px;
+    }
+
+    .event-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .event-time {
+      font-size: 12px;
+      color: #88A0B6;
+      margin-bottom: 5px;
+    }
+
+    .event-name {
+      font-size: 16px;
+      font-weight: bold;
+      color: #527B9F;
+    }
+
+    .event-detail {
+      font-size: 13px;
+      color: #879CAF;
+      line-height: 1.8;
+      margin-top: 7px;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
+    /* 活動操作按鈕 */
+    .event-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .action-btn {
+      padding: 7px 12px;
+      border: 1px solid #E3EBF3;
+      background: white;
+      border-radius: 8px;
+      color: #7892A9;
+      font-size: 12px;
+      transition: .2s;
+    }
+
+    .action-btn:hover {
+      background: #EDF5FC;
+      color: #527EA5;
+    }
+
+    .action-btn.delete:hover {
+      background: #FFF1F1;
+      color: #C87979;
+      border-color: #F0D5D5;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 38px 15px;
+      color: #A0B2C2;
+    }
+
+    .empty-icon {
+      font-size: 35px;
+      margin-bottom: 12px;
+    }
+
+    /* 新增活動 Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 61, 80, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 22px;
+      padding: 25px;
+      box-shadow: 0 15px 50px rgba(40, 65, 95, .15);
+      animation: popup .18s ease-out;
+    }
+
+    @keyframes popup {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 21px;
+      font-weight: bold;
+      color: #4D779C;
+    }
+
+    .close-btn {
+      width: 34px;
+      height: 34px;
+      border: none;
+      background: #F1F6FA;
+      color: #7C98B0;
+      border-radius: 50%;
+      font-size: 18px;
+    }
+
+    .form-group {
+      margin-top: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: #6D859C;
+      margin-bottom: 7px;
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #DFE9F1;
+      border-radius: 11px;
+      outline: none;
+      background: white;
+      color: #43596F;
+      font-size: 14px;
+      transition: .2s;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: #86B0D5;
+      box-shadow: 0 0 0 3px rgba(134,176,213,.12);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+/* 提醒通知選項 */
+.reminder-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.reminder-grid label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px;
+  margin: 0;
+  background: #F3F7FB;
+  border: 1px solid #E6EDF4;
+  border-radius: 9px;
+  color: #6486A5;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.reminder-grid input {
+  width: 16px !important;
+  height: 16px;
+  margin: 0;
+  accent-color: #6E9FC8;
+  flex-shrink: 0;
+}
+
+.reminder-hint {
+  color: #91A5B8;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .modal-footer {
+      margin-top: 22px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .cancel-btn {
+      flex: 1;
+      background: #F1F5F8;
+      color: #7D96AA;
+      border: none;
+      border-radius: 11px;
+      padding: 13px;
+    }
+
+    .save-btn {
+      flex: 2;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 11px;
+      padding: 13px;
+      font-weight: bold;
+    }
+
+    .save-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .save-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    /* 載入 */
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #8CA3B8;
+    }
+
+    /* 手機版 */
+    @media (max-width: 700px) {
+      .app {
+        padding: 12px;
+      }
+
+      .header {
+        padding: 18px;
+      }
+
+      .brand-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+        border-radius: 14px;
+      }
+
+      .brand h1 {
+        font-size: 20px;
+      }
+
+      .header-tag {
+        display: none;
+      }
+
+      .calendar-panel {
+        padding: 14px;
+      }
+
+      .month-title {
+        font-size: 20px;
+      }
+
+      .calendar-day {
+        min-height: 72px;
+        padding: 4px;
+      }
+
+      .day-number {
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+      }
+
+      .weekday {
+        font-size: 11px;
+        padding: 8px 0;
+      }
+
+      .day-event {
+        font-size: 9px;
+        padding: 3px 4px;
+      }
+
+      .more-events {
+        font-size: 9px;
+      }
+
+      .bottom-section {
+        padding: 16px;
+      }
+
+      .selected-date-title {
+        font-size: 16px;
+      }
+
+      .add-btn {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .calendar-day {
+        min-height: 62px;
+      }
+
+      .day-event {
+        padding: 2px;
+        font-size: 8px;
+      }
+
+      .month-title {
+        font-size: 18px;
+      }
+
+      .today-btn {
+        padding: 0 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- 頁首 -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">🗓️</div>
+      <div>
+        <h1>我們的家庭日曆</h1>
+        <p>爸爸 & 媽媽 &阿澤 · 一起安排生活的每一天 💙</p>
+      </div>
+    </div>
+    <div class="header-tag">👨‍👩‍👧 家庭共享行程</div>
+  </header>
+
+  <!-- 月曆 -->
+  <section class="calendar-panel">
+
+    <div class="calendar-toolbar">
+      <div class="month-title" id="monthTitle"></div>
+
+      <div class="toolbar-right">
+        <button class="today-btn" onclick="goToday()">今天</button>
+        <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+        <button class="nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+    </div>
+
+    <div class="weekdays">
+      <div class="weekday">日</div>
+      <div class="weekday">一</div>
+      <div class="weekday">二</div>
+      <div class="weekday">三</div>
+      <div class="weekday">四</div>
+      <div class="weekday">五</div>
+      <div class="weekday">六</div>
+    </div>
+
+    <div class="calendar-grid" id="calendarGrid"></div>
+
+  </section>
+
+  <!-- 當日活動 -->
+  <section class="bottom-section">
+
+    <div class="bottom-header">
+      <div class="selected-date-title" id="selectedDateTitle"></div>
+      <button class="add-btn" onclick="openModal()">＋ 新增活動</button>
+    </div>
+
+    <div id="eventList"></div>
+
+  </section>
+
+</div>
+
+<!-- 新增活動視窗 -->
+<div class="modal-overlay" id="modalOverlay" onclick="overlayClose(event)">
+  <div class="modal">
+
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">新增家庭活動 💙</div>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="form-group">
+      <label>活動名稱 *</label>
+      <input id="eventTitle" placeholder="例如：家庭聚餐、看醫生">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>活動日期 *</label>
+        <input id="eventDate" type="date">
+      </div>
+
+      <div class="form-group">
+        <label>活動時間 *</label>
+        <input id="eventTime" type="time">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>活動地點</label>
+      <input id="eventLocation" placeholder="輸入地址或地點">
+    </div>
+
+    <div class="form-group">
+      <label>活動備註</label>
+      <textarea id="eventNote" placeholder="需要準備什麼、其他提醒..."></textarea>
+    </div>
+<div class="form-group">
+  <label>提醒通知（可複選）</label>
+
+  <div class="reminder-hint">
+    可選擇多個提醒時間，預設為前一天及前一小時
+  </div>
+
+  <div class="reminder-grid">
+
+    <label>
+      <input type="checkbox" name="reminder" value="前一週">
+      前一週
+    </label>
+
+    <label>
+      <input type="checkbox" name="reminder" value="前兩天">
+      前兩天
+    </label>
+
+    <label>
+      <input type="checkbox" name="reminder" value="前一天" checked>
+      前一天
+    </label>
+
+    <label>
+      <input type="checkbox" name="reminder" value="前12小時">
+      前12小時
+    </label>
+
+    <label>
+      <input type="checkbox" name="reminder" value="前6小時">
+      前6小時
+    </label>
+
+    <label>
+      <input type="checkbox" name="reminder" value="前3小時">
+      前3小時
+    </label>
+
+    <label>
+      <input type="checkbox" name="reminder" value="前一小時" checked>
+      前一小時
+    </label>
+
+    <label>
+      <input type="checkbox" name="reminder" value="前30分鐘">
+      前30分鐘
+    </label>
+
+    <label>
+      <input type="checkbox" name="reminder" value="前10分鐘">
+      前10分鐘
+    </label>
+
+  </div>
+</div>
+    <div class="modal-footer">
+      <button class="cancel-btn" onclick="closeModal()">取消</button>
+      <input type="hidden" id="eventId">
+      <button class="save-btn" id="saveBtn" onclick="saveEvent()">儲存活動</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let currentDate = new Date();
+  let selectedDate = new Date();
+  let allEvents = [];
+
+  // 日期工具：使用本地年月日，避免 UTC 轉換造成日期偏移
+  function dateKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+  function parseDateKey(key) {
+    const parts = key.split('-').map(Number);
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+  }
+
+  function formatSelectedDate(date) {
+    return date.getFullYear() + ' 年 ' +
+      (date.getMonth() + 1) + ' 月 ' +
+      date.getDate() + ' 日';
+  }
+
+  // 讀取活動
+  function loadEvents() {
+  document.getElementById('eventList').innerHTML =
+    '<div class="loading">正在載入家庭活動...</div>';
+
+  const callbackName = 'calendarCallback_' + Date.now();
+
+  window[callbackName] = function(result) {
+    delete window[callbackName];
+
+    if (!result || !result.success) {
+      document.getElementById('eventList').textContent =
+        '讀取失敗：' + (result?.message || '無法取得活動資料');
+      return;
+    }
+
+    allEvents = result.data || [];
+    renderCalendar();
+    renderDayEvents();
+  };
+
+  const script = document.createElement('script');
+
+  script.src =
+    'https://script.google.com/macros/s/AKfycbxr4Q1tqeGVZWC6zgUlUwmi6UYHC4AjCfze3VSZZPgtmVqQq19oZ-0C3GeMOU0hORjZ/exec' +
+    '?action=getEvents&callback=' + callbackName;
+
+  script.onerror = function() {
+    delete window[callbackName];
+    document.getElementById('eventList').textContent =
+      '讀取失敗，請檢查網路或 Apps Script 部署設定。';
+  };
+
+  document.body.appendChild(script);
+}
+
+  // 月曆繪製
+  function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    grid.replaceChildren();
+
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    document.getElementById('monthTitle').textContent =
+      year + ' 年 ' + (month + 1) + ' 月';
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // 顯示前一個月日期
+    const prevDays = new Date(year, month, 0).getDate();
+
+    // 42格月曆（6週）
+    for (let i = 0; i < 42; i++) {
+      let date;
+      let isOtherMonth = false;
+
+      if (i < firstDay) {
+        date = new Date(year, month - 1, prevDays - firstDay + i + 1);
+        isOtherMonth = true;
+      } else if (i >= firstDay + daysInMonth) {
+        date = new Date(year, month + 1, i - firstDay - daysInMonth + 1);
+        isOtherMonth = true;
+      } else {
+        date = new Date(year, month, i - firstDay + 1);
+      }
+
+      const key = dateKey(date);
+      const dayEvents = allEvents
+        .filter(e => e.date === key)
+        .sort((a, b) => a.time.localeCompare(b.time));
+
+      const cell = document.createElement('div');
+      cell.className = 'calendar-day';
+
+      if (isOtherMonth) cell.classList.add('other-month');
+      if (key === dateKey(new Date())) cell.classList.add('today');
+      if (key === dateKey(selectedDate)) cell.classList.add('selected');
+      if (date.getDay() === 0) cell.classList.add('sunday');
+      if (date.getDay() === 6) cell.classList.add('saturday');
+
+      cell.dataset.date = key;
+
+      const dayNumber = document.createElement('div');
+      dayNumber.className = 'day-number';
+      dayNumber.textContent = date.getDate();
+      cell.appendChild(dayNumber);
+
+      dayEvents.slice(0, 2).forEach(function(event, index) {
+        const eventEl = document.createElement('div');
+        eventEl.className = 'day-event event-' + ((index % 3) + 1);
+        eventEl.textContent = event.time + ' ' + event.title;
+        eventEl.title = event.title;
+        cell.appendChild(eventEl);
+      });
+
+      if (dayEvents.length > 2) {
+        const more = document.createElement('div');
+        more.className = 'more-events';
+        more.textContent = '+ ' + (dayEvents.length - 2) + ' 個活動';
+        cell.appendChild(more);
+      }
+
+      cell.addEventListener('click', function() {
+        selectedDate = parseDateKey(key);
+
+        // 點擊跨月日期，切換到該月份
+        if (isOtherMonth) {
+          currentDate = new Date(date.getFullYear(), date.getMonth(), 1);
+        }
+
+        renderCalendar();
+        renderDayEvents();
+      });
+
+      grid.appendChild(cell);
+    }
+  }
+
+  // 顯示所選日期活動
+  
+function renderDayEvents() {
+  document.getElementById('selectedDateTitle').textContent =
+    formatSelectedDate(selectedDate) + ' · 行程';
+
+  const container = document.getElementById('eventList');
+  container.replaceChildren();
+
+  const key = dateKey(selectedDate);
+
+  const dayEvents = allEvents
+    .filter(e => e.date === key)
+    .sort((a, b) => a.time.localeCompare(b.time));
+
+  if (dayEvents.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+
+    const icon = document.createElement('div');
+    icon.className = 'empty-icon';
+    icon.textContent = '☁️';
+
+    const text = document.createElement('div');
+    text.textContent = '這一天還沒有安排活動';
+
+    empty.append(icon, text);
+    container.appendChild(empty);
+    return;
+  }
+
+  dayEvents.forEach(function(event, index) {
+    const card = document.createElement('div');
+    card.className = 'event-card';
+
+    const bar = document.createElement('div');
+    bar.className = 'event-bar';
+    bar.style.background = ['#8AB4DA', '#A6C7B0', '#E1B994'][index % 3];
+
+    const content = document.createElement('div');
+    content.className = 'event-content';
+
+    const time = document.createElement('div');
+    time.className = 'event-time';
+    time.textContent = '⏰ ' + event.time;
+
+    const name = document.createElement('div');
+    name.className = 'event-name';
+    name.textContent = event.title;
+
+    const detail = document.createElement('div');
+    detail.className = 'event-detail';
+
+    let detailText = '';
+    if (event.location) detailText += '📍 ' + event.location;
+    if (event.note) {
+      if (detailText) detailText += '\n';
+      detailText += '📝 ' + event.note;
+    }
+
+    detail.textContent = detailText;
+
+    content.append(time, name);
+    if (detailText) content.appendChild(detail);
+
+    // 編輯及刪除按鈕
+    const actions = document.createElement('div');
+    actions.className = 'event-actions';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'action-btn';
+    editBtn.textContent = '✏️ 編輯';
+    editBtn.addEventListener('click', function() {
+      editEvent(event.id);
+    });
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'action-btn delete';
+    deleteBtn.textContent = '🗑️ 刪除';
+    deleteBtn.addEventListener('click', function() {
+      removeEvent(event.id, event.title);
+    });
+
+    actions.append(editBtn, deleteBtn);
+    content.appendChild(actions);
+
+    card.append(bar, content);
+    container.appendChild(card);
+  });
+}
+
+  // 月份切換
+  function changeMonth(offset) {
+    currentDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + offset,
+      1
+    );
+
+    renderCalendar();
+  }
+
+  // 回到今天
+  function goToday() {
+    currentDate = new Date();
+    selectedDate = new Date();
+    renderCalendar();
+    renderDayEvents();
+  }
+function setReminderChecks(reminders) {
+  const selected = Array.isArray(reminders)
+    ? reminders
+    : ['前一天', '前一小時'];
+
+  document.querySelectorAll('input[name="reminder"]').forEach(function(input) {
+    input.checked = selected.includes(input.value);
+  });
+}
+  // 開啟新增活動視窗
+
+function openModal() {
+  document.getElementById('eventId').value = '';
+  document.getElementById('eventDate').value = dateKey(selectedDate);
+  document.getElementById('eventTitle').value = '';
+  document.getElementById('eventTime').value = '';
+  document.getElementById('eventLocation').value = '';
+  document.getElementById('eventNote').value = '';
+  setReminderChecks(['前一天', '前一小時']);
+
+  document.getElementById('modalTitle').textContent = '新增家庭活動 💙';
+
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '儲存活動';
+  btn.disabled = false;
+
+  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('eventTitle').focus();
+}
+
+
+function editEvent(id) {
+  const event = allEvents.find(function(e) {
+    return String(e.id) === String(id);
+  });
+
+  if (!event) {
+    alert('找不到這筆活動');
+    return;
+  }
+
+  document.getElementById('eventId').value = event.id;
+  document.getElementById('eventTitle').value = event.title;
+  document.getElementById('eventDate').value = event.date;
+  document.getElementById('eventTime').value = event.time;
+  document.getElementById('eventLocation').value = event.location || '';
+  document.getElementById('eventNote').value = event.note || '';
+setReminderChecks(event.reminders || ['前一天', '前一小時']);
+  document.getElementById('modalTitle').textContent = '編輯家庭活動 ✏️';
+
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '儲存修改';
+
+  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('eventTitle').focus();
+}
+
+
+  // 關閉視窗
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('show');
+  }
+
+  function overlayClose(event) {
+    if (event.target.id === 'modalOverlay') {
+      closeModal();
+    }
+  }
+
+  // 儲存活動
+  
+function saveEvent() {
+  const event = {
+    id: document.getElementById('eventId').value,
+    title: document.getElementById('eventTitle').value,
+    date: document.getElementById('eventDate').value,
+    time: document.getElementById('eventTime').value,
+    location: document.getElementById('eventLocation').value,
+    note: document.getElementById('eventNote').value,
+    reminders: Array.from(
+      document.querySelectorAll('input[name="reminder"]:checked')
+    ).map(input => input.value)
+  };
+
+  if (!event.title.trim()) {
+    alert('請輸入活動名稱');
+    return;
+  }
+
+  if (!event.date || !event.time) {
+    alert('請選擇活動日期及時間');
+    return;
+  }
+
+  const isEdit = Boolean(event.id);
+  const btn = document.getElementById('saveBtn');
+
+  btn.disabled = true;
+  btn.textContent = isEdit ? '修改中...' : '儲存中...';
+
+  const callbackName = 'saveCallback_' + Date.now();
+
+  window[callbackName] = function(result) {
+    delete window[callbackName];
+    script.remove();
+
+    btn.disabled = false;
+    btn.textContent = isEdit ? '儲存修改' : '儲存活動';
+
+    if (!result || !result.success) {
+      alert(
+        (isEdit ? '修改' : '新增') + '失敗：' +
+        (result?.message || '請稍後再試')
+      );
+      return;
+    }
+
+    selectedDate = parseDateKey(event.date);
+    currentDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      1
+    );
+
+    closeModal();
+    loadEvents();
+  };
+
+  const script = document.createElement('script');
+
+  script.onerror = function() {
+    delete window[callbackName];
+    script.remove();
+
+    btn.disabled = false;
+    btn.textContent = isEdit ? '儲存修改' : '儲存活動';
+
+    alert('連線失敗，請檢查網路或 Apps Script 部署設定。');
+  };
+
+  const params = new URLSearchParams({
+    action: isEdit ? 'updateEvent' : 'addEvent',
+    callback: callbackName,
+    data: JSON.stringify(event)
+  });
+
+  script.src =
+    'https://script.google.com/macros/s/AKfycbxr4Q1tqeGVZWC6zgUlUwmi6UYHC4AjCfze3VSZZPgtmVqQq19oZ-0C3GeMOU0hORjZ/exec?' +
+    params.toString();
+
+  document.body.appendChild(script);
+}
+
+function removeEvent(id, title) {
+  const confirmed = confirm(
+    '確定要刪除「' + title + '」嗎？\n\n刪除後將不再顯示此活動。'
+  );
+
+  if (!confirmed) return;
+
+  const callbackName = 'deleteCallback_' + Date.now();
+  const script = document.createElement('script');
+
+  window[callbackName] = function(result) {
+    delete window[callbackName];
+    script.remove();
+
+    if (!result || !result.success) {
+      alert('刪除失敗：' + (result?.message || '請稍後再試'));
+      return;
+    }
+
+    loadEvents();
+  };
+
+  script.onerror = function() {
+    delete window[callbackName];
+    script.remove();
+    alert('連線失敗，請檢查網路或 Apps Script 部署設定。');
+  };
+
+  const params = new URLSearchParams({
+    action: 'deleteEvent',
+    id: id,
+    callback: callbackName
+  });
+
+  script.src =
+    'https://script.google.com/macros/s/AKfycbxr4Q1tqeGVZWC6zgUlUwmi6UYHC4AjCfze3VSZZPgtmVqQq19oZ-0C3GeMOU0hORjZ/exec?' +
+    params.toString();
+
+  document.body.appendChild(script);
+}
+
+
+  // Esc 關閉視窗
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // 初始化
+  loadEvents();
+</script>
+
+</body>
+</html>
